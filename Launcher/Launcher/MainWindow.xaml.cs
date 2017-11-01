@@ -34,7 +34,7 @@ namespace Launcher
             InitializeComponent();
 
             SLNPath(@"C:\Users\Kiro\Documents\Visual Studio 2017\Projects");
-            SLNName(@"C:\\");
+            SLNName();
 
         }
 
@@ -55,7 +55,7 @@ namespace Launcher
             }
         }
 
-        public void SLNName(string sDir)
+        public void SLNName()
         {
             foreach (var fi in di.GetFiles("*.exe", SearchOption.AllDirectories))
             {
