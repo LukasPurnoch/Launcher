@@ -37,7 +37,7 @@ namespace Launcher
             SLNName();
 
         }
-
+        //https://stackoverflow.com/questions/30991331/how-to-navigate-one-folder-up-from-current-file-path
         DirectoryInfo di = new DirectoryInfo(@"C:\Users\Kiro\Documents\Visual Studio 2017\Projects");
         string[] directories = Directory.GetDirectories(@"C:\Users\Kiro\Documents\Visual Studio 2017\Projects");
         string[] files = Directory.GetFiles(@"C:\Users\Kiro\Documents\Visual Studio 2017\Projects", "*.sln");
