@@ -14,6 +14,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using FileHelpers;
 using System.IO;
+using System.Diagnostics;
 
 namespace Launcher
 {
@@ -22,25 +23,26 @@ namespace Launcher
     /// </summary>
     public partial class MainWindow : Window
     {
+        string sDir = @"D:\purnolu15";
 
-        List<string> slnPath = new List<string>();
+        List<string> Path = new List<string>();
         List<string> slnName = new List<string>();
-        //List<DirPath> pathsList = new List<DirPath>();
-        //DirectoryInfo[] directories;
-        //string exeName = "";
+        List<string> exeName = new List<string>();
+
+        DirectoryInfo di = new DirectoryInfo(@"D:\purnolu15");
+        string[] directories = Directory.GetDirectories(@"D:\purnolu15");
+        //string[] parent = Directory.GetParent();
 
         public MainWindow()
         {
             InitializeComponent();
 
-            SLNPath(@"C:\Users\Kiro\Documents\Visual Studio 2017\Projects");
+            SLNPath(sDir);
+            EXEPath(sDir);
             SLNName();
+            EXEName();
 
         }
-        //https://stackoverflow.com/questions/30991331/how-to-navigate-one-folder-up-from-current-file-path
-        DirectoryInfo di = new DirectoryInfo(@"C:\Users\Kiro\Documents\Visual Studio 2017\Projects");
-        string[] directories = Directory.GetDirectories(@"C:\Users\Kiro\Documents\Visual Studio 2017\Projects");
-        string[] files = Directory.GetFiles(@"C:\Users\Kiro\Documents\Visual Studio 2017\Projects", "*.sln");
 
         public void SLNPath(string sDir)
         {
@@ -48,59 +50,78 @@ namespace Launcher
             {
                 foreach (string f in Directory.GetFiles(d, "*.sln"))
                 {
-                    slnPath.Add(f);
-                    LIST.ItemsSource = slnPath;
+                    Path.Add(f);
+                    PATH.ItemsSource = Path;
                 }
                 SLNPath(d);
             }
         }
-
+        public void EXEPath(string sDir)
+        {
+            foreach (string d in Directory.GetDirectories(sDir))
+            {
+                foreach (string f in Directory.GetFiles(d, "*.exe"))
+                {
+                    Path.Add(f);
+                    PATH.ItemsSource = Path;
+                }
+                EXEPath(d);
+            }
+        }
+        public void FindEXEPath(string sDir, string fpath)
+        {
+            foreach (string d in Directory.GetDirectories(sDir))
+            {
+                foreach (string f in Directory.GetFiles(d, fpath))
+                {
+                    Process.Start(f);
+                }
+                FindEXEPath(d, fpath);
+            }
+        }
+        public void FindSLNPath(string sDir, string fpath)
+        {
+            foreach (string d in Directory.GetDirectories(sDir))
+            {
+                foreach (string f in Directory.GetFiles(d, fpath))
+                {
+                    Process.Start(f);
+                }
+                FindSLNPath(d, fpath);
+            }
+        }
         public void SLNName()
+        {
+            foreach (var fi in di.GetFiles("*.sln", SearchOption.AllDirectories))
+            {
+                slnName.Add(fi.Name);
+                SLN.ItemsSource = slnName;
+            }
+        }
+        public void EXEName()
         {
             foreach (var fi in di.GetFiles("*.exe", SearchOption.AllDirectories))
             {
-                slnName.Add(fi.Name);
-                slnPath.Add(fi.Name);
-                LIST.ItemsSource = slnPath;
+                exeName.Add(fi.Name);
+                EXE.ItemsSource = exeName;
             }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-        /*public void FindExe(DirectoryInfo[] directories, int j)
+        private void RunExe_Click(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < directories.Length; i++)
-            {
-                var fileinfo = new DirectoryInfo(@directories[i].FullName);
-                FileInfo[] files = fileinfo.GetFiles("*.exe", SearchOption.AllDirectories);
+            var selectedItems = EXE.SelectedIndex; //name
+            var fpath = exeName[EXE.SelectedIndex];
 
-                if (files.Length > 0)
-                {
+            FindEXEPath(sDir, fpath);
+        }
+        private void RunSln_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = SLN.SelectedIndex; //name
+            var fpath = slnName[SLN.SelectedIndex];
 
-                    //AppPath appPath = new AppPath(exeName);
+            FindSLNPath(sDir, fpath);
+        }
 
-                    foreach (var item in files)
-                    {
-                        if (exeName == System.IO.Path.GetFileNameWithoutExtension(item.Name))
-                        {
-                            pathsList[j].AddPath(item.FullName);
-                        }
-                    }
-
-                    //pathsList[j].AddAppList(appPath);
-
-                    exeNames.Add(appPath.Name);
-                }
-            }
-        }*/
+        
     }
 }
