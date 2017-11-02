@@ -121,7 +121,10 @@ namespace Launcher
 
             FindSLNPath(sDir, fpath);
         }
-
-        
+        private void AddCVS_Click(object sender, RoutedEventArgs e)
+        {
+            //var selectedItems = SLN.SelectedIndex; //name
+            //var fpath = slnName[SLN.SelectedIndex];
+        }
     }
 }

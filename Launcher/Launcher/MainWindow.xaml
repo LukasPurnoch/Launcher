@@ -30,7 +30,7 @@
         </ListView>
         <Button x:Name="RunExe" Content="Run selected .exe" HorizontalAlignment="Left" Margin="210,193,0,0" VerticalAlignment="Top" Width="175" Click="RunExe_Click"/>
         <Button x:Name="RunSln" Content="Run selected .sln" HorizontalAlignment="Left" Margin="210,168,0,0" VerticalAlignment="Top" Width="175" Click="RunSln_Click"/>
-        <Button x:Name="AddCvs" Content="Add .cvs to parent dir" HorizontalAlignment="Left" Margin="210,218,0,0" VerticalAlignment="Top" Width="175" Click="RunExe_Click"/>
+        <Button x:Name="AddCvs" Content="Add .cvs to parent dir" HorizontalAlignment="Left" Margin="210,218,0,0" VerticalAlignment="Top" Width="175" Click="AddCVS_Click"/>
         <Label x:Name="TestLabel" Content="TESTLABEL" HorizontalAlignment="Left" Margin="10,274,0,0" VerticalAlignment="Top" Height="185" Width="195"/>
     </Grid>
 </Window>
