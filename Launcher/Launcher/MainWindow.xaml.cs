@@ -28,21 +28,33 @@ namespace Launcher
         List<string> Path = new List<string>();
         List<string> slnName = new List<string>();
         List<string> exeName = new List<string>();
+        List<string> Directoryy = new List<string>();
 
         DirectoryInfo di = new DirectoryInfo(@"D:\purnolu15");
         string[] directories = Directory.GetDirectories(@"D:\purnolu15");
-        //string[] parent = Directory.GetParent();
+        string[] directoriess = Directory.GetDirectories(@"D:\purnolu15", "*");
+
+        //string folder = new DirectoryInfo(@"D:\purnolu15").Name;
+
 
         public MainWindow()
         {
             InitializeComponent();
 
-            SLNPath(sDir);
-            EXEPath(sDir);
-            SLNName();
-            EXEName();
+            foreach (string dd in directoriess)
+            {
+                Directoryy.Add(dd);
+                PATH.ItemsSource = Directoryy;
+            }
+
+            //SLNPath(sDir);
+            //EXEPath(sDir);
+            //SLNName();
+            //EXEName();
 
         }
+
+
 
         public void SLNPath(string sDir)
         {
