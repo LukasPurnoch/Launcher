@@ -12,131 +12,180 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using FileHelpers;
 using System.IO;
 using System.Diagnostics;
 
-namespace Launcher
+namespace Launcher_V2
 {
     /// <summary>
     /// Interakční logika pro MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        string sDir = @"D:\purnolu15";
+        string sDir = @"C:\Users\Kiro\Source\Repos";
+        string TxtName;
 
-        List<string> Path = new List<string>();
-        List<string> slnName = new List<string>();
-        List<string> exeName = new List<string>();
-        List<string> Directoryy = new List<string>();
+        DirectoryInfo di = new DirectoryInfo(@"C:\Users\Kiro\Source\Repos");
 
-        DirectoryInfo di = new DirectoryInfo(@"D:\purnolu15");
-        string[] directories = Directory.GetDirectories(@"D:\purnolu15");
-        string[] directoriess = Directory.GetDirectories(@"D:\purnolu15", "*");
+        string[] directories = Directory.GetDirectories(@"C:\Users\Kiro\Source\Repos", "*.sln");
 
-        //string folder = new DirectoryInfo(@"D:\purnolu15").Name;
+        List<string> FolderNames = new List<string>();
+        List<string> FolderPaths = new List<string>();
+        List<string> SlnPaths = new List<string>();
+        List<string> ExePaths = new List<string>();
+        List<string> ExeNames = new List<string>();
 
+        List<string> FinalExePath = new List<string>();
 
         public MainWindow()
         {
             InitializeComponent();
 
-            foreach (string dd in directoriess)
-            {
-                Directoryy.Add(dd);
-                PATH.ItemsSource = Directoryy;
-            }
-
-            //SLNPath(sDir);
-            //EXEPath(sDir);
-            //SLNName();
-            //EXEName();
-
+            Skryt();
+            DirectoryShow(sDir);
         }
 
+        public void Skryt()
+        {
+            FileName.Visibility = Visibility.Hidden;
+            Textbox.Visibility = Visibility.Hidden;
+            RunExe.Visibility = Visibility.Hidden;
+            RunSln.Visibility = Visibility.Hidden;
+            CreateTxt.Visibility = Visibility.Hidden;
+            SaveTxt.Visibility = Visibility.Hidden;
+            DeleteTxt.Visibility = Visibility.Hidden;
+            DeleteDir.Visibility = Visibility.Hidden;
+        }
+        public void Zobrazit()
+        {
+            FileName.Visibility = Visibility.Visible;
+            Textbox.Visibility = Visibility.Visible;
+            RunExe.Visibility = Visibility.Visible;
+            RunSln.Visibility = Visibility.Visible;
+            CreateTxt.Visibility = Visibility.Visible;
+            SaveTxt.Visibility = Visibility.Visible;
+            DeleteTxt.Visibility = Visibility.Visible;
+            DeleteDir.Visibility = Visibility.Visible;
+        }
 
-
-        public void SLNPath(string sDir)
+        public void DirectoryShow(string sDir) //ZOBRAZENÍ JMEN SLOŽEK VE SLOŽCE /REPOS
         {
             foreach (string d in Directory.GetDirectories(sDir))
             {
                 foreach (string f in Directory.GetFiles(d, "*.sln"))
                 {
-                    Path.Add(f);
-                    PATH.ItemsSource = Path;
+                    SlnPaths.Add(f); // SLN CESTY
+                    FolderPaths.Add(System.IO.Path.GetDirectoryName(f)); // SLOZKY CESTY
+
+                    string FolderName = System.IO.Path.GetFileName(System.IO.Path.GetDirectoryName(f)); // ZÍSKÁNÍ SAMOSTATNÉHO JMÉNA
+                    FolderNames.Add(FolderName); // PŘIDÁNÍ DO LISTU
+                    DIRS.ItemsSource = FolderNames; // VÝPIS DO LISTVIEW
                 }
-                SLNPath(d);
+                DirectoryShow(d);
             }
+
+
         }
-        public void EXEPath(string sDir)
+
+        public void RunSelectedEXE(string sDir, string ExeName)
         {
             foreach (string d in Directory.GetDirectories(sDir))
             {
-                foreach (string f in Directory.GetFiles(d, "*.exe"))
-                {
-                    Path.Add(f);
-                    PATH.ItemsSource = Path;
-                }
-                EXEPath(d);
-            }
-        }
-        public void FindEXEPath(string sDir, string fpath)
-        {
-            foreach (string d in Directory.GetDirectories(sDir))
-            {
-                foreach (string f in Directory.GetFiles(d, fpath))
+                foreach (string f in Directory.GetFiles(d, ExeName + ".exe"))
                 {
                     Process.Start(f);
                 }
-                FindEXEPath(d, fpath);
+                RunSelectedEXE(d, ExeName);
             }
         }
-        public void FindSLNPath(string sDir, string fpath)
+        public void AddTxt()
         {
-            foreach (string d in Directory.GetDirectories(sDir))
+            TxtName = FolderNames[DIRS.SelectedIndex];
+            var fpath = FolderPaths[DIRS.SelectedIndex];
+
+            using (FileStream fs = File.Create(fpath + "/" + TxtName + "_readme.txt"))
             {
-                foreach (string f in Directory.GetFiles(d, fpath))
-                {
-                    Process.Start(f);
-                }
-                FindSLNPath(d, fpath);
+                /*Byte[] info = new UTF8Encoding(true).GetBytes("This is some text in the file.");
+                fs.Write(info, 0, info.Length);*/
             }
         }
-        public void SLNName()
+        public void ReadTxt()
         {
-            foreach (var fi in di.GetFiles("*.sln", SearchOption.AllDirectories))
+            TxtName = FolderNames[DIRS.SelectedIndex];
+            var fpath = FolderPaths[DIRS.SelectedIndex];
+
+            if (File.Exists(fpath + "/" + TxtName + "_readme.txt"))
             {
-                slnName.Add(fi.Name);
-                SLN.ItemsSource = slnName;
+                Textbox.Text = File.ReadAllText(fpath + "/" + TxtName + "_readme.txt");
             }
         }
-        public void EXEName()
+        public void SaveeTxt()
         {
-            foreach (var fi in di.GetFiles("*.exe", SearchOption.AllDirectories))
+            TxtName = FolderNames[DIRS.SelectedIndex];
+            var fpath = FolderPaths[DIRS.SelectedIndex];
+            string BoxText = Textbox.Text;
+
+            if (File.Exists(fpath + "/" + TxtName + "_readme.txt"))
             {
-                exeName.Add(fi.Name);
-                EXE.ItemsSource = exeName;
+                File.WriteAllText(fpath + "/" + TxtName + "_readme.txt", BoxText);
+            }
+        }
+        public void DeleteeTxt()
+        {
+            TxtName = FolderNames[DIRS.SelectedIndex];
+            var fpath = FolderPaths[DIRS.SelectedIndex];
+
+            if (File.Exists(fpath + "/" + TxtName + "_readme.txt"))
+            {
+                File.Delete(fpath + "/" + TxtName + "_readme.txt");
+            }
+
+            //DIRS.ItemsSource = fpath + "/" + TxtName + "_readme.txt";
+        }
+        public void DeleteeDir()
+        {
+            TxtName = FolderNames[DIRS.SelectedIndex];
+            var fpath = FolderPaths[DIRS.SelectedIndex];
+
+            if (Directory.Exists(fpath))
+            {
+                Directory.Delete(fpath, true);
             }
         }
 
-        private void RunExe_Click(object sender, RoutedEventArgs e)
+        private void Select_Click(object sender, RoutedEventArgs e)
         {
-            var selectedItems = EXE.SelectedIndex; //name
-            var fpath = exeName[EXE.SelectedIndex];
-
-            FindEXEPath(sDir, fpath);
+            Zobrazit();
+            FileName.Content = FolderNames[DIRS.SelectedIndex]; // VÝPIS PODLE VYBRANÉ SLOŽKY
+            ReadTxt();
         }
         private void RunSln_Click(object sender, RoutedEventArgs e)
         {
-            var selectedItems = SLN.SelectedIndex; //name
-            var fpath = slnName[SLN.SelectedIndex];
-
-            FindSLNPath(sDir, fpath);
+            var fpath = SlnPaths[DIRS.SelectedIndex]; // CESTA VYBRANÁ PODLE INDEXU
+            Process.Start(fpath); // SPUŠTĚNÍ .SLN
         }
-        private void AddCVS_Click(object sender, RoutedEventArgs e)
+        private void RunExe_Click(object sender, RoutedEventArgs e)
         {
-            //var selectedItems = SLN.SelectedIndex; //name
-            //var fpath = slnName[SLN.SelectedIndex];
+            var fpath = FolderNames[DIRS.SelectedIndex]; // NÁZEV SLOŽKY --> NÁZEV EXE SOUBORU
+            RunSelectedEXE(sDir, fpath);
+        }
+        private void CreateTxt_Click(object sender, RoutedEventArgs e)
+        {
+            var fpath = FolderNames[DIRS.SelectedIndex];
+
+            AddTxt();
+        }
+        private void SaveTxt_Click(object sender, RoutedEventArgs e)
+        {
+            SaveeTxt();
+        }
+        private void DeleteDir_Click(object sender, RoutedEventArgs e)
+        {
+            DeleteeDir();
+        }
+        private void DeleteTxt_Click(object sender, RoutedEventArgs e)
+        {
+            DeleteeTxt();
         }
     }
 }
